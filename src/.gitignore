@@ -1,0 +1,5 @@
+glove_gensim_vectors.txt
+GoogleNews-vectors-negative300.bin
+crawl-300d-2M.vec
+__pycache__/
+.gitignore
