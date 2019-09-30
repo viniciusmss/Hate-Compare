@@ -53,7 +53,7 @@ f_vocab = open('vocab_fast_text', 'r')
 vocab = json.load(f_vocab)
 word2vec_model = {}
 for k,v in vocab.iteritems():
-word2vec_model[k] = word2vec_model1[int(v)]
+    word2vec_model[k] = word2vec_model1[int(v)]
 del word2vec_model1
 
 
@@ -110,7 +110,7 @@ def gen_data():
     y = np.array(y)
     return X, y
 
-    
+
 def get_model(m_type=None):
     if not m_type:
         print 'ERROR: Please provide a valid method name'
@@ -145,7 +145,7 @@ def classification_model(X, Y, model_type="logistic"):
 
     scores2 = cross_val_score(get_model(model_type), X, Y, cv=NO_OF_FOLDS, scoring='recall_weighted')
     print "Recall(avg): %0.3f (+/- %0.3f)" % (scores2.mean(), scores2.std() * 2)
-    
+
     scores3 = cross_val_score(get_model(model_type), X, Y, cv=NO_OF_FOLDS, scoring='f1_weighted')
     print "F1-score(avg): %0.3f (+/- %0.3f)" % (scores3.mean(), scores3.std() * 2)
 
@@ -162,5 +162,3 @@ if __name__ == "__main__":
 
     classification_model(X, Y, MODEL_TYPE)
     pdb.set_trace()
-
-
