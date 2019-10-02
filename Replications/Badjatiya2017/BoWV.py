@@ -157,7 +157,7 @@ if __name__ == "__main__":
     SEED = int(args.seed)
     NO_OF_FOLDS = int(args.folds)
     CLASS_WEIGHT = args.class_weight
-    N_ESTIMATORS = int(args.estimators)
+    N_ESTIMATORS = int(args.estimators) if args.estimators else None
     LOSS_FUN = args.loss
     KERNEL = args.kernel
     if args.tokenizer == "glove":
