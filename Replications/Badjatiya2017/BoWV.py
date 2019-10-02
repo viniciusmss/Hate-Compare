@@ -167,7 +167,12 @@ if __name__ == "__main__":
 
     print 'GLOVE embedding: %s' %(GLOVE_MODEL_FILE)
     print 'Embedding Dimension: %d' %(EMBEDDING_DIM)
-    word2vec_model = gensim.models.KeyedVectors.load_word2vec_format(GLOVE_MODEL_FILE)
+
+    ### NOTE: If you have downloaded the glove model file from the GloVe website,
+    # you need to include the vocab size and embedding dimension at the top of the
+    # .txt file.  For example, for the 'glove.twitter.27B.25d' file,
+    # you would append '1193514 25' as the first line.
+    word2vec_model = gensim.models.KeyedVectors.load_word2vec_format(GLOVE_MODEL_FILE, binary=False)
 
     #filter_vocab(20000)
 
