@@ -167,7 +167,7 @@ if __name__ == "__main__":
 
     print 'GLOVE embedding: %s' %(GLOVE_MODEL_FILE)
     print 'Embedding Dimension: %d' %(EMBEDDING_DIM)
-    word2vec_model = gensim.models.Word2Vec.load_word2vec_format(GLOVE_MODEL_FILE)
+    word2vec_model = gensim.models.KeyedVectors.load_word2vec_format(GLOVE_MODEL_FILE)
 
     #filter_vocab(20000)
 
