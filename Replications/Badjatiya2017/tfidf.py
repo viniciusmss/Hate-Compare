@@ -45,6 +45,7 @@ KERNEL = None
 MAX_NGRAM_LENGTH = None
 SEED=42
 TOKENIZER=None
+N_JOBS=1
 
 
 def gen_data():
@@ -87,7 +88,7 @@ def classification_model(X, Y, model_type=None):
     print "Model Type:", model_type
 
     scorers = ['precision_weighted', 'recall_weighted', 'f1_weighted']
-    scores = cross_validate(get_model(model_type), X, Y, cv=NO_OF_FOLDS, scoring=scorers, verbose=1)
+    scores = cross_validate(get_model(model_type), X, Y, cv=NO_OF_FOLDS, scoring=scorers, verbose=1, n_jobs=N_JOBS)
 
     scores1 = scores["test_precision_weighted"]
     scores2 = scores["test_recall_weighted"]
@@ -109,6 +110,7 @@ if __name__ == "__main__":
     parser.add_argument('--estimators', default=N_ESTIMATORS)
     parser.add_argument('--loss', default=LOSS_FUN)
     parser.add_argument('--kernel', default=KERNEL)
+    parser.add_argument('--jobs', default=N_JOBS)
     parser.add_argument('--class_weight')
     parser.add_argument('--use-inverse-doc-freq', action='store_true')
 
@@ -123,6 +125,7 @@ if __name__ == "__main__":
     KERNEL = args.kernel
     MAX_NGRAM_LENGTH = int(args.max_ngram)
     USE_IDF = args.use_inverse_doc_freq
+    N_JOBS = int(args.jobs)
 
     if args.tokenizer == "glove":
         TOKENIZER = glove_tokenize
