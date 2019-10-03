@@ -127,7 +127,7 @@ def classification_model(X, Y, model_type=None):
     #predictions = cross_val_predict(logreg, X, Y, cv=NO_OF_FOLDS)
 
     scorers = ['precision_weighted', 'recall_weighted', 'f1_weighted']
-    scores = cross_validate(get_model(model_type), X, Y, cv=NO_OF_FOLDS, scoring=scorers)
+    scores = cross_validate(get_model(model_type), X, Y, cv=NO_OF_FOLDS, scoring=scorers, verbose=1)
 
     scores1 = scores["test_precision_weighted"]
     scores2 = scores["test_recall_weighted"]
