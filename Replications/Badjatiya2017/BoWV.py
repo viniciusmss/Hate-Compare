@@ -3,6 +3,7 @@ import argparse
 import sys
 import numpy as np
 import pdb
+import pickle
 from sklearn.metrics import make_scorer, f1_score, accuracy_score, recall_score, precision_score, classification_report, precision_recall_fscore_support
 from sklearn.ensemble  import GradientBoostingClassifier, RandomForestClassifier
 from sklearn.model_selection import cross_val_score, cross_val_predict, cross_validate
@@ -78,24 +79,42 @@ def gen_data():
     # words within the tweet that have an embedding and divide
     # by the number of words. Hence, the final embedding of the tweet
     # will be the average of the embeddings of its words.
-    y_map = {
-            'none': 0,
-            'racism': 1,
-            'sexism': 2
-            }
 
-    X, y = [], []
-    for tweet in tweets:
-        words = glove_tokenize(tweet['text'].lower())
-        emb = np.zeros(EMBEDDING_DIM)
-        for word in words:
-            try:
-                emb += word2vec_model[word]
-            except:
-                pass
-        emb /= len(words)
-        X.append(emb)
-        y.append(y_map[tweet['label']])
+    X_file = "BoWV_X.pickle"
+    y_file = "BoWV_y.pickle"
+
+    # Load if pickled files are available
+    try:
+        X = pickle.load(open(X_file, "rb"))
+        y = pickle.load(open(y_file, "rb"))
+        print "Features and labels loaded from pickled files."
+
+    # Create and save otherwise
+    except (OSError, IOError) as e:
+        print "Creating features and labels..."
+
+        y_map = {
+                'none': 0,
+                'racism': 1,
+                'sexism': 2
+                }
+
+        X, y = [], []
+        for tweet in tweets:
+            words = glove_tokenize(tweet['text'].lower())
+            emb = np.zeros(EMBEDDING_DIM)
+            for word in words:
+                try:
+                    emb += word2vec_model[word]
+                except:
+                    pass
+            emb /= len(words)
+            X.append(emb)
+            y.append(y_map[tweet['label']])
+
+        pickle.dump(X, open(X_file, "wb"))
+        pickle.dump(y, open(y_file, "wb"))
+
     return X, y
 
 
@@ -176,6 +195,7 @@ if __name__ == "__main__":
     # .txt file.  For example, for the 'glove.twitter.27B.25d' file,
     # you would append '1193514 25' as the first line.
     word2vec_model = gensim.models.KeyedVectors.load_word2vec_format(GLOVE_MODEL_FILE, binary=False)
+    print "GloVe model loaded successfully."
 
     #filter_vocab(20000)
 
