@@ -43,6 +43,7 @@ TOKENIZER = None
 SEED=42
 MAX_NB_WORDS = None
 NO_OF_FOLDS=10
+N_JOBS=1
 
 
 # vocab generation
@@ -146,7 +147,7 @@ def classification_model(X, Y, model_type=None):
     #predictions = cross_val_predict(logreg, X, Y, cv=NO_OF_FOLDS)
 
     scorers = ['precision_weighted', 'recall_weighted', 'f1_weighted']
-    scores = cross_validate(get_model(model_type), X, Y, cv=NO_OF_FOLDS, scoring=scorers, verbose=1)
+    scores = cross_validate(get_model(model_type), X, Y, cv=NO_OF_FOLDS, scoring=scorers, verbose=1, n_jobs=N_JOBS)
 
     scores1 = scores["test_precision_weighted"]
     scores2 = scores["test_recall_weighted"]
@@ -169,6 +170,7 @@ if __name__ == "__main__":
     parser.add_argument('--estimators', default=N_ESTIMATORS)
     parser.add_argument('--loss', default=LOSS_FUN)
     parser.add_argument('--kernel', default=KERNEL)
+    parser.add_argument('--jobs', default=N_JOBS)
     parser.add_argument('--class_weight')
 
 
