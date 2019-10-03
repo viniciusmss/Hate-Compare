@@ -4,7 +4,7 @@ import sys
 import numpy as np
 from sklearn.metrics import make_scorer, f1_score, accuracy_score, recall_score, precision_score, classification_report, precision_recall_fscore_support
 from sklearn.ensemble  import GradientBoostingClassifier, RandomForestClassifier
-from sklearn.model_selection import cross_val_score, cross_val_predict
+from sklearn.model_selection import cross_val_score, cross_val_predict, cross_validate
 from sklearn.feature_extraction.text import TfidfVectorizer
 import pdb
 from sklearn.metrics import make_scorer, f1_score, accuracy_score, recall_score, precision_score, classification_report, precision_recall_fscore_support
