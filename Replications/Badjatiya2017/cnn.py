@@ -181,6 +181,7 @@ def cnn_model(sequence_length, embedding_dim):
         convs.append(pool)
 
     if len(filter_sizes)>1:
+        # NOTE: Keras 2+ deprecated Merge. This function requires Keras 1.2.2
         out = Merge(mode='concat')(convs)
     else:
         out = convs[0]
@@ -304,7 +305,7 @@ if __name__ == "__main__":
     print 'Embedding Dimension: %d' %(EMBEDDING_DIM)
     print 'Allowing embedding learning: %s' %(str(LEARN_EMBEDDINGS))
 
-    word2vec_model = gensim.models.Word2Vec.load_word2vec_format(GLOVE_MODEL_FILE)
+    word2vec_model = gensim.models.KeyedVectors.load_word2vec_format(GLOVE_MODEL_FILE, binary=False)
     np.random.seed(SEED)
 
 
