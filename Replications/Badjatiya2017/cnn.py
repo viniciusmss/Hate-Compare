@@ -5,6 +5,7 @@ from keras.layers import Embedding, Input, LSTM
 from keras.models import Sequential, Model
 from keras.layers import Activation, Dense, Dropout, Embedding, Flatten, Input, Merge, Convolution1D, MaxPooling1D, GlobalMaxPooling1D
 import numpy as np
+import pickle
 import pdb
 from nltk import tokenize
 from sklearn.metrics import make_scorer, f1_score, accuracy_score, recall_score, precision_score, classification_report, precision_recall_fscore_support
@@ -82,19 +83,33 @@ def get_embedding_weights():
 def select_tweets():
     # selects the tweets as in mean_glove_embedding method
     # Processing
-    tweets = get_data()
-    X, Y = [], []
-    tweet_return = []
-    for tweet in tweets:
-        _emb = 0
-        words = TOKENIZER(tweet['text'].lower())
-        for w in words:
-            if w in word2vec_model:  # Check if embeeding there in GLove model
-                _emb+=1
-        if _emb:   # Not a blank tweet
-            tweet_return.append(tweet)
+
+    tweet_return_file = "cnn_tweets.pickle"
+
+    # Load if pickled files are available
+    try:
+        tweet_return = pickle.load(open(tweet_return_file, "rb"))
+        print "Tweets loaded from pickled file."
+
+    # Create and save otherwise
+    except (OSError, IOError) as e:
+
+        print "Loading tweets with embeddings available..."
+        tweets = get_data()
+        tweet_return = []
+        for tweet in tweets:
+            _emb = 0
+            words = TOKENIZER(tweet['text'].lower())
+            for w in words:
+                if w in word2vec_model:  # Check if embeeding there in GLove model
+                    _emb+=1
+            if _emb:   # Not a blank tweet
+                tweet_return.append(tweet)
+
+        pickle.dump(tweet_return, open(tweet_return_file, "wb"))
     print 'Tweets selected:', len(tweet_return)
     return tweet_return
+
 
 
 def gen_vocab():
