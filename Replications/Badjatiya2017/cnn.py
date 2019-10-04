@@ -117,7 +117,7 @@ def gen_vocab():
     vocab_index = 1
     for tweet in tweets:
         text = TOKENIZER(tweet['text'].lower())
-        text = ''.join([c for c in text if c not in punctuation])
+        text = ''.join([c for c in ' '.join(text) if c not in punctuation])
         words = text.split()
         words = [word for word in words if word not in STOPWORDS]
 
@@ -324,8 +324,7 @@ if __name__ == "__main__":
     np.random.seed(SEED)
 
 
-    Tweets = select_tweets()  # Get tweets which contain at least one word with an embedding.
-    tweets = Tweets
+    tweets = select_tweets()  # Get tweets which contain at least one word with an embedding.
     gen_vocab()
     #filter_vocab(20000)
     X, y = gen_sequence()
