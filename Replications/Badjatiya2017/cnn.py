@@ -224,7 +224,7 @@ def train_CNN(X, y, inp_dim, model, weights, epochs=EPOCHS, batch_size=BATCH_SIZ
         for epoch in xrange(epochs):
             for X_batch in batch_gen(X_temp, batch_size):
                 x = X_batch[:, :sentence_len]
-                y_temp = X_batch[:, sentence_len]
+                y_temp = X_batch[:, sentence_len] # Last column  will be y due to np.hstack
 
                 class_weights = None
                 if SCALE_LOSS_FUN:
@@ -308,7 +308,7 @@ if __name__ == "__main__":
     np.random.seed(SEED)
 
 
-    Tweets = select_tweets()
+    Tweets = select_tweets()  # Get tweets which contain at least one word with an embedding.
     tweets = Tweets
     gen_vocab()
     #filter_vocab(20000)
@@ -324,5 +324,3 @@ if __name__ == "__main__":
     train_CNN(data, y, EMBEDDING_DIM, model, W)
 
     pdb.set_trace()
-
-
