@@ -130,7 +130,7 @@ def get_model(m_type=None):
     elif m_type == "random_forest":
         logreg = RandomForestClassifier(class_weight=CLASS_WEIGHT, n_estimators=N_ESTIMATORS)
     elif m_type == "svm":
-        logreg = SVC(class_weight=CLASS_WEIGHT, kernel=KERNEL)
+        logreg = SVC(class_weight=CLASS_WEIGHT, kernel=KERNEL, gamma='scale')
     elif m_type == "svm_linear":
         logreg = LinearSVC(loss=LOSS_FUN, class_weight=CLASS_WEIGHT)
     else:
