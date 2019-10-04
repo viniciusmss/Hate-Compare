@@ -68,7 +68,7 @@ def get_model(m_type=None):
         return None
 
     if m_type == "tfidf_svm":
-        logreg = SVC(class_weight=CLASS_WEIGHT, kernel=KERNEL)
+        logreg = SVC(class_weight=CLASS_WEIGHT, kernel=KERNEL, gamma='scale')
     elif m_type == "tfidf_svm_linear":
         logreg = LinearSVC(C=0.01, loss=LOSS_FUN, class_weight=CLASS_WEIGHT)
     elif m_type == 'tfidf_logistic':
@@ -88,7 +88,7 @@ def classification_model(X, Y, model_type=None):
     print "Model Type:", model_type
 
     scorers = ['precision_weighted', 'recall_weighted', 'f1_weighted']
-    scores = cross_validate(get_model(model_type), X, Y, cv=NO_OF_FOLDS, scoring=scorers, verbose=1, n_jobs=N_JOBS)
+    scores = cross_validate(get_model(model_type), X, Y, cv=NO_OF_FOLDS, scoring=scorers, verbose=2, n_jobs=N_JOBS)
 
     scores1 = scores["test_precision_weighted"]
     scores2 = scores["test_recall_weighted"]
