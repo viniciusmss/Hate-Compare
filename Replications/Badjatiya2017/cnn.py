@@ -297,13 +297,11 @@ def train_CNN(X, y, inp_dim, model, weights, epochs=EPOCHS, batch_size=BATCH_SIZ
                 train_loss += _loss
                 train_acc += _acc
                 if i % 10 == 0:
-                    print "Epoch: %d/%d.\t Batch: %d. Loss: %d. Accuracy: %d" % (epoch,epochs, i, train_loss / i, train_acc/i)
+                    print "Epoch: %d/%d.\tBatch: %d.\tLoss: %f.\tAccuracy: %f" % (epoch,epochs, i, train_loss / i, train_acc/i)
 
         y_pred = model.predict_on_batch(X_test)
         y_pred = np.argmax(y_pred, axis=1)
-        print classification_report(y_test, y_pred)
-        print precision_recall_fscore_support(y_test, y_pred)
-        print y_pred
+        print "\n", classification_report(y_test, y_pred)
         p += precision_score(y_test, y_pred, average='weighted')
         p1 += precision_score(y_test, y_pred, average='micro')
         r += recall_score(y_test, y_pred, average='weighted')
@@ -362,7 +360,7 @@ if __name__ == "__main__":
     print 'Embedding Dimension: %d' %(EMBEDDING_DIM)
     print 'Allowing embedding learning: %s' %(str(LEARN_EMBEDDINGS))
 
-    # word2vec_model = gensim.models.KeyedVectors.load_word2vec_format(GLOVE_MODEL_FILE, binary=False)
+    word2vec_model = gensim.models.KeyedVectors.load_word2vec_format(GLOVE_MODEL_FILE, binary=False)
     np.random.seed(SEED)
 
 
@@ -381,5 +379,7 @@ if __name__ == "__main__":
     W = get_embedding_weights()
     model = cnn_model(data.shape[1], EMBEDDING_DIM)
     train_CNN(data, y, EMBEDDING_DIM, model, W, EPOCHS)
+    print "Saving model..."
+    model.save('cnn.h5')
 
     pdb.set_trace()
