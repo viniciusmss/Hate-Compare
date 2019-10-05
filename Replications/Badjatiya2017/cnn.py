@@ -296,7 +296,7 @@ def train_CNN(X, y, inp_dim, model, weights, epochs=EPOCHS, batch_size=BATCH_SIZ
                 _loss, _acc = model.train_on_batch(x, y_temp, class_weight=class_weights)
                 train_loss += _loss
                 train_acc += _acc
-                if i % 20 == 0:
+                if i % 35 == 0:
                     print "Epoch: %d/%d.\tBatch: %d.\tLoss: %f.\tAccuracy: %f" % (epoch,epochs, i, train_loss / i, train_acc/i)
 
         y_pred = model.predict_on_batch(X_test)
@@ -310,11 +310,6 @@ def train_CNN(X, y, inp_dim, model, weights, epochs=EPOCHS, batch_size=BATCH_SIZ
     print "average precision is %f" %(p/NO_OF_FOLDS)
     print "average recall is %f" %(r/NO_OF_FOLDS)
     print "average f1 is %f" %(f1/NO_OF_FOLDS)
-
-    print "micro results are"
-    print "average precision is %f" %(p1/NO_OF_FOLDS)
-    print "average recall is %f" %(r1/NO_OF_FOLDS)
-    print "average f1 is %f" %(f11/NO_OF_FOLDS)
 
 
 if __name__ == "__main__":
@@ -377,6 +372,4 @@ if __name__ == "__main__":
     model = cnn_model(data.shape[1], EMBEDDING_DIM)
     train_CNN(data, y, EMBEDDING_DIM, model, W, EPOCHS)
     print "Saving model..."
-    model.save('cnn.h5')
-
-    pdb.set_trace()
+    model.save('cnn_' + INITIALIZE_WEIGHTS_WITH + '.h5')
