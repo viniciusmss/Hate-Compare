@@ -114,6 +114,7 @@ def select_tweets():
 
 def gen_vocab():
 
+    global vocab, reverse_vocab
     vocab_file = "cnn_vocab.pickle"
     reverse_vocab_file = "cnn_reverse_vocab.pickle"
 
@@ -126,6 +127,7 @@ def gen_vocab():
     # Create and save otherwise
     except (OSError, IOError) as e:
 
+        print "Generating vocab files."
         # Processing
         vocab_index = 1
         for tweet in tweets:
@@ -156,23 +158,41 @@ def filter_vocab(k):
 
 
 def gen_sequence():
-    y_map = {
-            'none': 0,
-            'racism': 1,
-            'sexism': 2
-            }
 
-    X, y = [], []
-    for tweet in tweets:
-        text = TOKENIZER(tweet['text'].lower())
-        text = ''.join([c for c in text if c not in punctuation])
-        words = text.split()
-        words = [word for word in words if word not in STOPWORDS]
-        seq, _emb = [], []
-        for word in words:
-            seq.append(vocab.get(word, vocab['UNK']))
-        X.append(seq)
-        y.append(y_map[tweet['label']])
+    X_file = "cnn_X.pickle"
+    y_file = "cnn_y.pickle"
+
+    # Load if pickled files are available
+    try:
+        X = pickle.load(open(X_file, "rb"))
+        y = pickle.load(open(y_file, "rb"))
+        print "X and y loaded from pickled files."
+
+    # Create and save otherwise
+    except (OSError, IOError) as e:
+
+        print "Generating X and y files."
+        y_map = {
+                'none': 0,
+                'racism': 1,
+                'sexism': 2
+                }
+
+        X, y = [], []
+        for tweet in tweets:
+            text = TOKENIZER(tweet['text'].lower())
+            text = ''.join([c for c in ' '.join(text) if c not in punctuation])
+            words = text.split()
+            words = [word for word in words if word not in STOPWORDS]
+            seq, _emb = [], []
+            for word in words:
+                seq.append(vocab.get(word, vocab['UNK']))
+            X.append(seq)
+            y.append(y_map[tweet['label']])
+
+        pickle.dump(X, open(X_file, "wb"))
+        pickle.dump(y, open(y_file, "wb"))
+
     return X, y
 
 
@@ -343,7 +363,9 @@ if __name__ == "__main__":
     tweets = select_tweets()  # Get tweets which contain at least one word with an embedding.
     gen_vocab()
     #filter_vocab(20000)
+
     X, y = gen_sequence()
+
     #Y = y.reshape((len(y), 1))
     MAX_SEQUENCE_LENGTH = max(map(lambda x:len(x), X))
     print "max seq length is %d"%(MAX_SEQUENCE_LENGTH)
