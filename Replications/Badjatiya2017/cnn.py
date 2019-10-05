@@ -258,7 +258,6 @@ def train_CNN(X, y, inp_dim, model, weights, epochs=EPOCHS, batch_size=BATCH_SIZ
     cv_object = KFold(n_splits=NO_OF_FOLDS, shuffle=True, random_state=42)
     print cv_object
     p, r, f1 = 0., 0., 0.
-    p1, r1, f11 = 0., 0., 0.
     sentence_len = X.shape[1]
     for train_index, test_index in cv_object.split(X):
         if INITIALIZE_WEIGHTS_WITH == "glove":
@@ -296,20 +295,17 @@ def train_CNN(X, y, inp_dim, model, weights, epochs=EPOCHS, batch_size=BATCH_SIZ
                 _loss, _acc = model.train_on_batch(x, y_temp, class_weight=class_weights)
                 train_loss += _loss
                 train_acc += _acc
-                if i % 10 == 0:
+                if i % 20 == 0:
                     print "Epoch: %d/%d.\tBatch: %d.\tLoss: %f.\tAccuracy: %f" % (epoch,epochs, i, train_loss / i, train_acc/i)
 
         y_pred = model.predict_on_batch(X_test)
         y_pred = np.argmax(y_pred, axis=1)
         print "\n", classification_report(y_test, y_pred)
         p += precision_score(y_test, y_pred, average='weighted')
-        p1 += precision_score(y_test, y_pred, average='micro')
         r += recall_score(y_test, y_pred, average='weighted')
-        r1 += recall_score(y_test, y_pred, average='micro')
         f1 += f1_score(y_test, y_pred, average='weighted')
-        f11 += f1_score(y_test, y_pred, average='micro')
 
-    print "macro results are"
+    print "weighted results are"
     print "average precision is %f" %(p/NO_OF_FOLDS)
     print "average recall is %f" %(r/NO_OF_FOLDS)
     print "average f1 is %f" %(f1/NO_OF_FOLDS)
