@@ -261,6 +261,7 @@ def train_CNN(X, y, inp_dim, model, weights, epochs=EPOCHS, batch_size=BATCH_SIZ
     sentence_len = X.shape[1]
     for train_index, test_index in cv_object.split(X):
         if INITIALIZE_WEIGHTS_WITH == "glove":
+            shuffle_weights(model)
             model.layers[0].set_weights([weights])
         elif INITIALIZE_WEIGHTS_WITH == "random":
             shuffle_weights(model)
