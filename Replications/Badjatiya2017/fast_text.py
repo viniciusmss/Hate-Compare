@@ -26,11 +26,6 @@ import sys
 texts = []  # list of text samples
 labels_index = {}  # dictionary mapping label name to numeric id
 labels = []  # list of label ids
-label_map = {
-        'none': 0,
-        'racism': 1,
-        'sexism': 2
-    }
 
 EMBEDDING_DIM = int(sys.argv[1])
 np.random.seed(42)
@@ -155,23 +150,41 @@ def filter_vocab(k):
 
 
 def gen_sequence():
-    y_map = {
-            'none': 0,
-            'racism': 1,
-            'sexism': 2
-            }
 
-    X, y = [], []
-    for tweet in tweets:
-        text = Tokenize(tweet['text'])
-        text = ''.join([c for c in text if c not in punctuation])
-        words = text.split()
-        words = [word for word in words if word not in STOPWORDS]
-        seq, _emb = [], []
-        for word in words:
-            seq.append(vocab.get(word, vocab['UNK']))
-        X.append(seq)
-        y.append(y_map[tweet['label']])
+    X_file = "cnn_X.pickle"
+    y_file = "cnn_y.pickle"
+
+    # Load if pickled files are available
+    try:
+        X = pickle.load(open(X_file, "rb"))
+        y = pickle.load(open(y_file, "rb"))
+        print "X and y loaded from pickled files."
+
+    # Create and save otherwise
+    except (OSError, IOError) as e:
+
+        print "Generating X and y files."
+        y_map = {
+                'none': 0,
+                'racism': 1,
+                'sexism': 2
+                }
+
+        X, y = [], []
+        for tweet in tweets:
+            text = TOKENIZER(tweet['text'].lower())
+            text = ''.join([c for c in ' '.join(text) if c not in punctuation])
+            words = text.split()
+            words = [word for word in words if word not in STOPWORDS]
+            seq, _emb = [], []
+            for word in words:
+                seq.append(vocab.get(word, vocab['UNK']))
+            X.append(seq)
+            y.append(y_map[tweet['label']])
+
+        pickle.dump(X, open(X_file, "wb"))
+        pickle.dump(y, open(y_file, "wb"))
+
     return X, y
 
 
