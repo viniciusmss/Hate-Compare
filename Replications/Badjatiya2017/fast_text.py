@@ -5,6 +5,7 @@ from keras.layers import Embedding, Input, LSTM
 from keras.models import Sequential, Model
 from keras.layers import Activation, Dense, Dropout, Embedding, Flatten, Input, Merge, Convolution1D, MaxPooling1D, GlobalMaxPooling1D, GlobalAveragePooling1D
 import numpy as np
+import pickle
 from preprocess_twitter import tokenize as tokenizer_g
 import pdb
 from nltk import tokenize
