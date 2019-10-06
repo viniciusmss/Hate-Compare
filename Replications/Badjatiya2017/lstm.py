@@ -79,44 +79,74 @@ def get_embedding_weights():
 def select_tweets():
     # selects the tweets as in mean_glove_embedding method
     # Processing
-    tweets = get_data()
-    X, Y = [], []
-    tweet_return = []
-    for tweet in tweets:
-        _emb = 0
-        words = TOKENIZER(tweet['text'].lower())
-        for w in words:
-            if w in word2vec_model:  # Check if embeeding there in GLove model
-                _emb+=1
-        if _emb:   # Not a blank tweet
-            tweet_return.append(tweet)
+
+    tweet_return_file = "lstm_tweets.pickle"
+
+    # Load if pickled files are available
+    try:
+        tweet_return = pickle.load(open(tweet_return_file, "rb"))
+        print "Tweets loaded from pickled file."
+
+    # Create and save otherwise
+    except (OSError, IOError) as e:
+
+        print "Loading tweets with embeddings available..."
+        tweets = get_data()
+        tweet_return = []
+        for tweet in tweets:
+            _emb = 0
+            words = TOKENIZER(tweet['text'].lower())
+            for w in words:
+                if w in word2vec_model:  # Check if embeeding there in GLove model
+                    _emb+=1
+            if _emb:   # Not a blank tweet
+                tweet_return.append(tweet)
+
+        pickle.dump(tweet_return, open(tweet_return_file, "wb"))
     print 'Tweets selected:', len(tweet_return)
-    #pdb.set_trace()
     return tweet_return
 
 
-def gen_vocab():
-    # Processing
-    vocab_index = 1
-    for tweet in tweets:
-        text = TOKENIZER(tweet['text'].lower())
-        text = ''.join([c for c in text if c not in punctuation])
-        words = text.split()
-        words = [word for word in words if word not in STOPWORDS]
 
-        for word in words:
-            if word not in vocab:
-                vocab[word] = vocab_index
-                reverse_vocab[vocab_index] = word       # generate reverse vocab as well
-                vocab_index += 1
-            freq[word] += 1
-    vocab['UNK'] = len(vocab) + 1
-    reverse_vocab[len(vocab)] = 'UNK'
+def gen_vocab():
+
+    global vocab, reverse_vocab
+    vocab_file = "lstm_vocab.pickle"
+    reverse_vocab_file = "lstm_reverse_vocab.pickle"
+
+    # Load if pickled files are available
+    try:
+        vocab = pickle.load(open(vocab_file, "rb"))
+        reverse_vocab = pickle.load(open(reverse_vocab_file, "rb"))
+        print "Vocabs loaded from pickled files."
+
+    # Create and save otherwise
+    except (OSError, IOError) as e:
+
+        print "Generating vocab files."
+        # Processing
+        vocab_index = 1
+        for tweet in tweets:
+            text = TOKENIZER(tweet['text'].lower())
+            text = ''.join([c for c in ' '.join(text) if c not in punctuation])
+            words = text.split()
+            words = [word for word in words if word not in STOPWORDS]
+
+            for word in words:
+                if word not in vocab:
+                    vocab[word] = vocab_index
+                    reverse_vocab[vocab_index] = word       # generate reverse vocab as well
+                    vocab_index += 1
+                freq[word] += 1
+        vocab['UNK'] = len(vocab) + 1
+        reverse_vocab[len(vocab)] = 'UNK'
+
+        pickle.dump(vocab, open(vocab_file, "wb"))
+        pickle.dump(reverse_vocab, open(reverse_vocab_file, "wb"))
 
 
 def filter_vocab(k):
     global freq, vocab
-    pdb.set_trace()
     freq_sorted = sorted(freq.items(), key=operator.itemgetter(1))
     tokens = freq_sorted[:k]
     vocab = dict(zip(tokens, range(1, len(tokens) + 1)))
@@ -124,24 +154,43 @@ def filter_vocab(k):
 
 
 def gen_sequence():
-    y_map = {
-            'none': 0,
-            'racism': 1,
-            'sexism': 2
-            }
 
-    X, y = [], []
-    for tweet in tweets:
-        text = TOKENIZER(tweet['text'].lower())
-        text = ''.join([c for c in text if c not in punctuation])
-        words = text.split()
-        words = [word for word in words if word not in STOPWORDS]
-        seq, _emb = [], []
-        for word in words:
-            seq.append(vocab.get(word, vocab['UNK']))
-        X.append(seq)
-        y.append(y_map[tweet['label']])
+    X_file = "lstm_X.pickle"
+    y_file = "lstm_y.pickle"
+
+    # Load if pickled files are available
+    try:
+        X = pickle.load(open(X_file, "rb"))
+        y = pickle.load(open(y_file, "rb"))
+        print "X and y loaded from pickled files."
+
+    # Create and save otherwise
+    except (OSError, IOError) as e:
+
+        print "Generating X and y files."
+        y_map = {
+                'none': 0,
+                'racism': 1,
+                'sexism': 2
+                }
+
+        X, y = [], []
+        for tweet in tweets:
+            text = TOKENIZER(tweet['text'].lower())
+            text = ''.join([c for c in ' '.join(text) if c not in punctuation])
+            words = text.split()
+            words = [word for word in words if word not in STOPWORDS]
+            seq, _emb = [], []
+            for word in words:
+                seq.append(vocab.get(word, vocab['UNK']))
+            X.append(seq)
+            y.append(y_map[tweet['label']])
+
+        pickle.dump(X, open(X_file, "wb"))
+        pickle.dump(y, open(y_file, "wb"))
+
     return X, y
+
 
 
 def shuffle_weights(model):
