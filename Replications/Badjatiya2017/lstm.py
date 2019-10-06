@@ -231,7 +231,9 @@ def train_LSTM(X, y, model, inp_dim, weights, epochs=EPOCHS, batch_size=BATCH_SI
         y_train = y_train.reshape((len(y_train), 1))
         X_temp = np.hstack((X_train, y_train))
         for epoch in xrange(epochs):
-            for X_batch in batch_gen(X_temp, batch_size):
+            train_loss = 0
+            train_acc = 0
+            for i, X_batch in enumerate(batch_gen(X_temp, batch_size), 1):
                 x = X_batch[:, :sentence_len]
                 y_temp = X_batch[:, sentence_len]
 
@@ -247,9 +249,13 @@ def train_LSTM(X, y, model, inp_dim, weights, epochs=EPOCHS, batch_size=BATCH_SI
                 except Exception as e:
                     print e
                     print y_temp
-                print x.shape, y.shape
-                loss, acc = model.train_on_batch(x, y_temp, class_weight=class_weights)
-                print loss, acc
+
+                _loss, _acc = model.train_on_batch(x, y_temp, class_weight=class_weights)
+                train_loss += _loss
+                train_acc += _acc
+                if i % 35 == 0:
+                    print "Epoch: %d/%d.\tBatch: %d.\tLoss: %f.\tAccuracy: %f" % (epoch,epochs, i, train_loss / i, train_acc/i)
+
 
         y_pred = model.predict_on_batch(X_test)
         y_pred = np.argmax(y_pred, axis=1)
