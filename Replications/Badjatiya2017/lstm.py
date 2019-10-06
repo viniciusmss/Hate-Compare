@@ -332,5 +332,5 @@ if __name__ == "__main__":
     model = lstm_model(data.shape[1], EMBEDDING_DIM)
     #model = lstm_model(data.shape[1], 25, get_embedding_weights())
     train_LSTM(data, y, model, EMBEDDING_DIM, W)
-
-    pdb.set_trace()
+    print "Saving model..."
+    model.save('lstm_' + INITIALIZE_WEIGHTS_WITH + '.h5')
