@@ -43,7 +43,6 @@ NO_OF_FOLDS = 10
 CLASS_WEIGHT = None
 LOSS_FUN = None
 OPTIMIZER = None
-KERNEL = None
 TOKENIZER = None
 MAX_SEQUENCE_LENGTH = None
 INITIALIZE_WEIGHTS_WITH = None
@@ -239,7 +238,6 @@ if __name__ == "__main__":
     parser.add_argument('--batch-size', default=BATCH_SIZE, required=True)
     parser.add_argument('-s', '--seed', default=SEED)
     parser.add_argument('--folds', default=NO_OF_FOLDS)
-    parser.add_argument('--kernel', default=KERNEL)
     parser.add_argument('--class_weight')
     parser.add_argument('--initialize-weights', choices=['random', 'glove'], required=True)
     parser.add_argument('--learn-embeddings', action='store_true', default=False)
@@ -254,12 +252,11 @@ if __name__ == "__main__":
     CLASS_WEIGHT = args.class_weight
     LOSS_FUN = args.loss
     OPTIMIZER = args.optimizer
-    KERNEL = args.kernel
     if args.tokenizer == "glove":
         TOKENIZER = glove_tokenize
     elif args.tokenizer == "nltk":
         TOKENIZER = tokenize_nltk.casual.TweetTokenizer(strip_handles=True, reduce_len=True).tokenize
-    INITIALIZE_WEIGHTS_WITH = args.initialize_weights    
+    INITIALIZE_WEIGHTS_WITH = args.initialize_weights
     LEARN_EMBEDDINGS = args.learn_embeddings
     EPOCHS = int(args.epochs)
     BATCH_SIZE = int(args.batch_size)
