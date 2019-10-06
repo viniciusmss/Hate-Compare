@@ -217,7 +217,6 @@ def train_LSTM(X, y, model, inp_dim, weights, epochs=EPOCHS, batch_size=BATCH_SI
     cv_object = KFold(n_splits=NO_OF_FOLDS, shuffle=True, random_state=42)
     print cv_object
     p, r, f1 = 0., 0., 0.
-    p1, r1, f11 = 0., 0., 0.
     sentence_len = X.shape[1]
     for train_index, test_index in cv_object.split(X):
         if INITIALIZE_WEIGHTS_WITH == "glove":
@@ -258,22 +257,13 @@ def train_LSTM(X, y, model, inp_dim, weights, epochs=EPOCHS, batch_size=BATCH_SI
         print precision_recall_fscore_support(y_test, y_pred)
         print y_pred
         p += precision_score(y_test, y_pred, average='weighted')
-        p1 += precision_score(y_test, y_pred, average='micro')
         r += recall_score(y_test, y_pred, average='weighted')
-        r1 += recall_score(y_test, y_pred, average='micro')
         f1 += f1_score(y_test, y_pred, average='weighted')
-        f11 += f1_score(y_test, y_pred, average='micro')
-
 
     print "macro results are"
     print "average precision is %f" %(p/NO_OF_FOLDS)
     print "average recall is %f" %(r/NO_OF_FOLDS)
     print "average f1 is %f" %(f1/NO_OF_FOLDS)
-
-    print "micro results are"
-    print "average precision is %f" %(p1/NO_OF_FOLDS)
-    print "average recall is %f" %(r1/NO_OF_FOLDS)
-    print "average f1 is %f" %(f11/NO_OF_FOLDS)
 
 
 if __name__ == "__main__":
