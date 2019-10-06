@@ -31,11 +31,6 @@ label_map = {
         'racism': 1,
         'sexism': 2
     }
-tweet_data = get_data()
-for tweet in tweet_data:
-    texts.append(tweet['text'])
-    labels.append(label_map[tweet['label']])
-print('Found %s texts. (samples)' % len(texts))
 
 EMBEDDING_DIM = int(sys.argv[1])
 np.random.seed(42)
