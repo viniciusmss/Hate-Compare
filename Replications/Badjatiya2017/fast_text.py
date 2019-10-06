@@ -109,23 +109,40 @@ def select_tweets():
 
 
 def gen_vocab():
-    # Processing
-    vocab_index = 1
-    for tweet in tweets:
-        text = Tokenize(tweet['text'])
-        text = ''.join([c for c in text if c not in punctuation])
-        words = text.split()
-        words = [word for word in words if word not in STOPWORDS]
 
-        for word in words:
-            if word not in vocab:
-                vocab[word] = vocab_index
-                reverse_vocab[vocab_index] = word       # generate reverse vocab as well
-                vocab_index += 1
-            freq[word] += 1
-    vocab['UNK'] = len(vocab) + 1
-    reverse_vocab[len(vocab)] = 'UNK'
-    #pdb.set_trace()
+    global vocab, reverse_vocab
+    vocab_file = "cnn_vocab.pickle"
+    reverse_vocab_file = "cnn_reverse_vocab.pickle"
+
+    # Load if pickled files are available
+    try:
+        vocab = pickle.load(open(vocab_file, "rb"))
+        reverse_vocab = pickle.load(open(reverse_vocab_file, "rb"))
+        print "Vocabs loaded from pickled files."
+
+    # Create and save otherwise
+    except (OSError, IOError) as e:
+
+        print "Generating vocab files."
+        # Processing
+        vocab_index = 1
+        for tweet in tweets:
+            text = TOKENIZER(tweet['text'].lower())
+            text = ''.join([c for c in ' '.join(text) if c not in punctuation])
+            words = text.split()
+            words = [word for word in words if word not in STOPWORDS]
+
+            for word in words:
+                if word not in vocab:
+                    vocab[word] = vocab_index
+                    reverse_vocab[vocab_index] = word       # generate reverse vocab as well
+                    vocab_index += 1
+                freq[word] += 1
+        vocab['UNK'] = len(vocab) + 1
+        reverse_vocab[len(vocab)] = 'UNK'
+
+        pickle.dump(vocab, open(vocab_file, "wb"))
+        pickle.dump(reverse_vocab, open(reverse_vocab_file, "wb"))
 
 
 def filter_vocab(k):
