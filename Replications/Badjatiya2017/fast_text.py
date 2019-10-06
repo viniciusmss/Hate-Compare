@@ -50,7 +50,7 @@ NO_OF_CLASSES=3
 
 MAX_NB_WORDS = None
 VALIDATION_SPLIT = 0.2
-word2vec_model = gensim.models.Word2Vec.load_word2vec_format(GLOVE_MODEL_FILE)
+word2vec_model = gensim.models.KeyedVectors.load_word2vec_format(GLOVE_MODEL_FILE)
 
 
 # vocab generation
@@ -250,8 +250,7 @@ def tryWord(embedding_table):
 
 if __name__ == "__main__":
 
-    Tweets = select_tweets()
-    tweets = Tweets
+    tweets = select_tweets()
     gen_vocab()
     X, y = gen_sequence()
     MAX_SEQUENCE_LENGTH = max(map(lambda x:len(x), X))
