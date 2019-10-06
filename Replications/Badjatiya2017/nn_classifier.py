@@ -39,15 +39,15 @@ print('Found %s texts. (samples)' % len(texts))
 
 
 # logistic, gradient_boosting, random_forest, svm, tfidf_svm_linear, tfidf_svm_rbf
-model_count = 2
 word_embed_size = 200
 GLOVE_MODEL_FILE = str(sys.argv[1])
 EMBEDDING_DIM = int(sys.argv[2])
 MODEL_TYPE=sys.argv[3]
+MODEL_FILE=sys.argv[4]
 print 'Embedding Dimension: %d' %(EMBEDDING_DIM)
 print 'GloVe Embedding: %s' %(GLOVE_MODEL_FILE)
 
-word2vec_model1 = np.load('fast_text.npy')
+word2vec_model1 = np.load(MODEL_FILE)
 word2vec_model1 = word2vec_model1.reshape((word2vec_model1.shape[1], word2vec_model1.shape[2]))
 f_vocab = open('vocab_fast_text', 'r')
 vocab = json.load(f_vocab)
