@@ -31,12 +31,9 @@ labels = []  # list of label ids
 
 # logistic, gradient_boosting, random_forest, svm, tfidf_svm_linear, tfidf_svm_rbf
 word_embed_size = 200
-GLOVE_MODEL_FILE = str(sys.argv[1])
-EMBEDDING_DIM = int(sys.argv[2])
-MODEL_TYPE=sys.argv[3]
-MODEL_FILE=sys.argv[4]
-print 'Embedding Dimension: %d' %(EMBEDDING_DIM)
-print 'GloVe Embedding: %s' %(GLOVE_MODEL_FILE)
+MODEL_TYPE=sys.argv[1]
+MODEL_FILE=sys.argv[2]
+print 'Embedding Dimension: %d' %(word_embed_size)
 
 pretrained_model = load_model(MODEL_FILE)
 pretrained_embedding = pretrained_model.layers[0].get_weights()[0]
