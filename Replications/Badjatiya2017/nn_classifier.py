@@ -4,9 +4,10 @@ import numpy as np
 import pdb, json
 from sklearn.metrics import make_scorer, f1_score, accuracy_score, recall_score, precision_score, classification_report, precision_recall_fscore_support
 from sklearn.ensemble  import GradientBoostingClassifier, RandomForestClassifier
-from sklearn.model_selection import cross_val_score, cross_val_predict
+from sklearn.model_selection import cross_val_score, cross_val_predict, cross_validate
 from sklearn.feature_extraction.text import TfidfVectorizer
 import pdb
+import pickle
 from sklearn.metrics import make_scorer, f1_score, accuracy_score, recall_score, precision_score, classification_report, precision_recall_fscore_support
 from sklearn.utils import shuffle
 from sklearn.ensemble  import GradientBoostingClassifier, RandomForestClassifier
@@ -175,19 +176,16 @@ def classification_model(X, Y, model_type="logistic"):
     X, Y = shuffle(X, Y, random_state=SEED)
     print "Model Type:", model_type
 
-    #predictions = cross_val_predict(logreg, X, Y, cv=NO_OF_FOLDS)
-    scores1 = cross_val_score(get_model(model_type), X, Y, cv=NO_OF_FOLDS, scoring='precision_weighted')
+    scorers = ['precision_weighted', 'recall_weighted', 'f1_weighted']
+    scores = cross_validate(get_model(model_type), X, Y, cv=NO_OF_FOLDS, scoring=scorers, verbose=1, n_jobs=-2)
+
+    scores1 = scores["test_precision_weighted"]
+    scores2 = scores["test_recall_weighted"]
+    scores3 = scores["test_f1_weighted"]
+
     print "Precision(avg): %0.3f (+/- %0.3f)" % (scores1.mean(), scores1.std() * 2)
-
-    scores2 = cross_val_score(get_model(model_type), X, Y, cv=NO_OF_FOLDS, scoring='recall_weighted')
     print "Recall(avg): %0.3f (+/- %0.3f)" % (scores2.mean(), scores2.std() * 2)
-
-    scores3 = cross_val_score(get_model(model_type), X, Y, cv=NO_OF_FOLDS, scoring='f1_weighted')
     print "F1-score(avg): %0.3f (+/- %0.3f)" % (scores3.mean(), scores3.std() * 2)
-
-    pdb.set_trace()
-
-
 
 if __name__ == "__main__":
 
