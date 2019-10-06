@@ -111,8 +111,8 @@ def select_tweets():
 def gen_vocab():
 
     global vocab, reverse_vocab
-    vocab_file = "cnn_vocab.pickle"
-    reverse_vocab_file = "cnn_reverse_vocab.pickle"
+    vocab_file = "fast_text_vocab.pickle"
+    reverse_vocab_file = "fast_text_reverse_vocab.pickle"
 
     # Load if pickled files are available
     try:
