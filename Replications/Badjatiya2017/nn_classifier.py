@@ -71,43 +71,79 @@ tweets = {}
 def select_tweets_whose_embedding_exists():
     # selects the tweets as in mean_glove_embedding method
     # Processing
-    tweets = get_data()
-    X, Y = [], []
-    tweet_return = []
-    for tweet in tweets:
-        _emb = 0
-        words = glove_tokenize(tweet['text'])
-        for w in words:
-            if w in word2vec_model:  # Check if embeeding there in GLove model
-                _emb+=1
-        if _emb:   # Not a blank tweet
-            tweet_return.append(tweet)
+
+    tweet_return_file = "cnn_tweets.pickle"
+
+    # Load if pickled files are available
+    try:
+        tweet_return = pickle.load(open(tweet_return_file, "rb"))
+        print "Tweets loaded from pickled file."
+
+    # Create and save otherwise
+    except (OSError, IOError) as e:
+
+        print "Loading tweets with embeddings available..."
+        tweets = get_data()
+        tweet_return = []
+        for tweet in tweets:
+            _emb = 0
+            words = TOKENIZER(tweet['text'].lower())
+            for w in words:
+                if w in word2vec_model:  # Check if embeeding there in GLove model
+                    _emb+=1
+            if _emb:   # Not a blank tweet
+                tweet_return.append(tweet)
+
+        pickle.dump(tweet_return, open(tweet_return_file, "wb"))
     print 'Tweets selected:', len(tweet_return)
-    #pdb.set_trace()
     return tweet_return
 
 
 def gen_data():
-    y_map = {
-            'none': 0,
-            'racism': 1,
-            'sexism': 2
-            }
+    # In this function, for all accepted tweets, we turn them into an
+    # embedding of EMBEDDING_DIM. We then sum the embeddings of all
+    # words within the tweet that have an embedding and divide
+    # by the number of words. Hence, the final embedding of the tweet
+    # will be the average of the embeddings of its words.
 
-    X, y = [], []
-    for tweet in tweets:
-        words = glove_tokenize(tweet['text'])
-        emb = np.zeros(word_embed_size)
-        for word in words:
-            try:
-                emb += word2vec_model[word]
-            except:
-                pass
-        emb /= len(words)
-        X.append(emb)
-        y.append(y_map[tweet['label']])
-    X = np.array(X)
-    y = np.array(y)
+    X_file = "nn_X.pickle"
+    y_file = "nn_y.pickle"
+
+    # Load if pickled files are available
+    try:
+        X = pickle.load(open(X_file, "rb"))
+        y = pickle.load(open(y_file, "rb"))
+        print "Features and labels loaded from pickled files."
+
+    # Create and save otherwise
+    except (OSError, IOError) as e:
+        print "Creating features and labels..."
+
+        y_map = {
+                'none': 0,
+                'racism': 1,
+                'sexism': 2
+                }
+
+        X, y = [], []
+        for tweet in tweets:
+            words = glove_tokenize(tweet['text']) # .lower()
+            emb = np.zeros(word_embed_size)
+            for word in words:
+                try:
+                    emb += word2vec_model[word]
+                except:
+                    pass
+            emb /= len(words)
+            X.append(emb)
+            y.append(y_map[tweet['label']])
+
+        X = np.array(X)
+        y = np.array(y)
+
+        pickle.dump(X, open(X_file, "wb"))
+        pickle.dump(y, open(y_file, "wb"))
+
     return X, y
 
 
