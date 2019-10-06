@@ -261,8 +261,6 @@ def train_LSTM(X, y, model, inp_dim, weights, epochs=EPOCHS, batch_size=BATCH_SI
         y_pred = model.predict_on_batch(X_test)
         y_pred = np.argmax(y_pred, axis=1)
         print classification_report(y_test, y_pred)
-        print precision_recall_fscore_support(y_test, y_pred)
-        print y_pred
         p += precision_score(y_test, y_pred, average='weighted')
         r += recall_score(y_test, y_pred, average='weighted')
         f1 += f1_score(y_test, y_pred, average='weighted')
@@ -332,6 +330,6 @@ if __name__ == "__main__":
 
     model = lstm_model(data.shape[1], EMBEDDING_DIM)
     #model = lstm_model(data.shape[1], 25, get_embedding_weights())
-    train_LSTM(data, y, model, EMBEDDING_DIM, W)
+    train_LSTM(data, y, model, EMBEDDING_DIM, W, EPOCHS, BATCH_SIZE)
     print "Saving model..."
     model.save('lstm_' + INITIALIZE_WEIGHTS_WITH + '.h5')
