@@ -1,5 +1,6 @@
 from data_handler import get_data
 import sys
+from keras.models import load_model
 import numpy as np
 import pdb, json
 from sklearn.metrics import make_scorer, f1_score, accuracy_score, recall_score, precision_score, classification_report, precision_recall_fscore_support
@@ -48,7 +49,7 @@ MODEL_FILE=sys.argv[4]
 print 'Embedding Dimension: %d' %(EMBEDDING_DIM)
 print 'GloVe Embedding: %s' %(GLOVE_MODEL_FILE)
 
-word2vec_model1 = np.load(MODEL_FILE)
+word2vec_model1 = load_model(MODEL_FILE)
 word2vec_model1 = word2vec_model1.reshape((word2vec_model1.shape[1], word2vec_model1.shape[2]))
 f_vocab = open('vocab_fast_text', 'r')
 vocab = json.load(f_vocab)
