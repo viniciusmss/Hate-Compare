@@ -215,7 +215,6 @@ def train_fasttext(X, y, model, inp_dim,embedding_weights, epochs=10, batch_size
     cv_object = KFold(n_splits=10, shuffle=True, random_state=42)
     print cv_object
     p, r, f1 = 0., 0., 0.
-    p1, r1, f11 = 0., 0., 0.
     sentence_len = X.shape[1]
     lookup_table = np.zeros_like(model.layers[0].get_weights()[0])
     for train_index, test_index in cv_object.split(X):
@@ -251,19 +250,12 @@ def train_fasttext(X, y, model, inp_dim,embedding_weights, epochs=10, batch_size
         p += precision_score(y_test, y_pred, average='weighted')
         p1 += precision_score(y_test, y_pred, average='micro')
         r += recall_score(y_test, y_pred, average='weighted')
-        r1 += recall_score(y_test, y_pred, average='micro')
-        f1 += f1_score(y_test, y_pred, average='weighted')
-        f11 += f1_score(y_test, y_pred, average='micro')
 
     print "macro results are"
     print "average precision is %f" %(p/10)
     print "average recall is %f" %(r/10)
     print "average f1 is %f" %(f1/10)
 
-    print "micro results are"
-    print "average precision is %f" %(p1/10)
-    print "average recall is %f" %(r1/10)
-    print "average f1 is %f" %(f11/10)
     return lookup_table/float(10)
 
 
