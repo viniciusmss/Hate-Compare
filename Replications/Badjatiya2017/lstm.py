@@ -221,6 +221,7 @@ def train_LSTM(X, y, model, inp_dim, weights, epochs=EPOCHS, batch_size=BATCH_SI
     sentence_len = X.shape[1]
     for train_index, test_index in cv_object.split(X):
         if INITIALIZE_WEIGHTS_WITH == "glove":
+            shuffle_weights(model)
             model.layers[0].set_weights([weights])
         elif INITIALIZE_WEIGHTS_WITH == "random":
             shuffle_weights(model)
