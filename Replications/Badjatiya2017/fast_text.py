@@ -151,8 +151,8 @@ def filter_vocab(k):
 
 def gen_sequence():
 
-    X_file = "cnn_X.pickle"
-    y_file = "cnn_y.pickle"
+    X_file = "fast_text_X.pickle"
+    y_file = "fast_text_y.pickle"
 
     # Load if pickled files are available
     try:
