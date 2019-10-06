@@ -49,15 +49,13 @@ MODEL_FILE=sys.argv[4]
 print 'Embedding Dimension: %d' %(EMBEDDING_DIM)
 print 'GloVe Embedding: %s' %(GLOVE_MODEL_FILE)
 
-word2vec_model1 = load_model(MODEL_FILE)
-word2vec_model1 = word2vec_model1.reshape((word2vec_model1.shape[1], word2vec_model1.shape[2]))
-f_vocab = open('vocab_fast_text', 'r')
-vocab = json.load(f_vocab)
+pretrained_model = load_model(MODEL_FILE)
+pretrained_embedding = pretrained_model.layers[0].get_weights()[0]
+vocab = pickle.load(open("cnn_vocab.pickle", 'rb'))
 word2vec_model = {}
 for k,v in vocab.iteritems():
-    word2vec_model[k] = word2vec_model1[int(v)]
-del word2vec_model1
-
+    word2vec_model[k] = pretrained_embedding[int(v)]
+del pretrained_model
 
 SEED=42
 MAX_NB_WORDS = None
