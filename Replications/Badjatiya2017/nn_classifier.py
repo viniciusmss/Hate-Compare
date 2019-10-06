@@ -89,49 +89,31 @@ def select_tweets_whose_embedding_exists():
 
 
 def gen_data():
-    # In this function, for all accepted tweets, we turn them into an
-    # embedding of EMBEDDING_DIM. We then sum the embeddings of all
-    # words within the tweet that have an embedding and divide
-    # by the number of words. Hence, the final embedding of the tweet
-    # will be the average of the embeddings of its words.
+    # Generate features and labels
+    # Features will be given by the average
+    # embedding for all words in the sentence.
 
-    X_file = "nn_X.pickle"
-    y_file = "nn_y.pickle"
+    y_map = {
+            'none': 0,
+            'racism': 1,
+            'sexism': 2
+            }
 
-    # Load if pickled files are available
-    try:
-        X = pickle.load(open(X_file, "rb"))
-        y = pickle.load(open(y_file, "rb"))
-        print "Features and labels loaded from pickled files."
+    X, y = [], []
+    for tweet in tweets:
+        words = glove_tokenize(tweet['text']) # .lower()
+        emb = np.zeros(word_embed_size)
+        for word in words:
+            try:
+                emb += word2vec_model[word]
+            except:
+                pass
+        emb /= len(words)
+        X.append(emb)
+        y.append(y_map[tweet['label']])
 
-    # Create and save otherwise
-    except (OSError, IOError) as e:
-        print "Creating features and labels..."
-
-        y_map = {
-                'none': 0,
-                'racism': 1,
-                'sexism': 2
-                }
-
-        X, y = [], []
-        for tweet in tweets:
-            words = glove_tokenize(tweet['text']) # .lower()
-            emb = np.zeros(word_embed_size)
-            for word in words:
-                try:
-                    emb += word2vec_model[word]
-                except:
-                    pass
-            emb /= len(words)
-            X.append(emb)
-            y.append(y_map[tweet['label']])
-
-        X = np.array(X)
-        y = np.array(y)
-
-        pickle.dump(X, open(X_file, "wb"))
-        pickle.dump(y, open(y_file, "wb"))
+    X = np.array(X)
+    y = np.array(y)
 
     return X, y
 
