@@ -248,8 +248,8 @@ def train_fasttext(X, y, model, inp_dim,embedding_weights, epochs=10, batch_size
         print precision_recall_fscore_support(y_test, y_pred)
         print y_pred
         p += precision_score(y_test, y_pred, average='weighted')
-        p1 += precision_score(y_test, y_pred, average='micro')
         r += recall_score(y_test, y_pred, average='weighted')
+        f1 += f1_score(y_test, y_pred, average='weighted')
 
     print "macro results are"
     print "average precision is %f" %(p/10)
