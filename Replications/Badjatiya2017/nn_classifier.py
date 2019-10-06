@@ -183,4 +183,3 @@ if __name__ == "__main__":
     X, Y = gen_data()
 
     classification_model(X, Y, MODEL_TYPE)
-    pdb.set_trace()
