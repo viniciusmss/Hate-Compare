@@ -45,7 +45,7 @@ np.random.seed(42)
 
 
 # PINKESH files
-GLOVE_MODEL_FILE="/home/pinkesh/DATASETS/glove-twitter/GENSIM.glove.twitter.27B." + str(EMBEDDING_DIM) + "d.txt"
+GLOVE_MODEL_FILE="GloVe/glove.twitter.27B." + str(EMBEDDING_DIM) + "d.txt"
 NO_OF_CLASSES=3
 
 MAX_NB_WORDS = None
@@ -266,5 +266,3 @@ if __name__ == "__main__":
     #check_semantic_sim(table)
     tryWord(table)
     pdb.set_trace()
-
-
