@@ -28,17 +28,6 @@ import xgboost as xgb
 texts = []  # list of text samples
 labels_index = {}  # dictionary mapping label name to numeric id
 labels = []  # list of label ids
-label_map = {
-        'none': 0,
-        'racism': 1,
-        'sexism': 2
-    }
-tweet_data = get_data()
-for tweet in tweet_data:
-    texts.append(tweet['text'].lower())
-    labels.append(label_map[tweet['label']])
-print('Found %s texts. (samples)' % len(texts))
-
 
 # logistic, gradient_boosting, random_forest, svm, tfidf_svm_linear, tfidf_svm_rbf
 word_embed_size = 200
