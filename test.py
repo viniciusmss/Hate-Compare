@@ -4,12 +4,8 @@ import pandas as pd
 from nltk import sent_tokenize, word_tokenize, pos_tag, ne_chunk
 from nltk.tokenize import SpaceTokenizer
 
-from preprocess import preprocess
-from create_lookup_tables import create_lookup_tables
-from padding import create_pad_fn, pad_tweets
-from hate_classification import hate_classification
-from change_hate_labels import change_hate_labels
-
+from utils import preprocess, create_lookup_tables, create_pad_fn, pad_tweets,\
+                  hate_classification, change_hate_labels
 
 def _test_preprocess():
 
