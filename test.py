@@ -8,6 +8,7 @@ from preprocess import preprocess
 from create_lookup_tables import create_lookup_tables
 from padding import create_pad_fn, pad_tweets
 from hate_classification import hate_classification
+from change_hate_labels import change_hate_labels
 
 
 def _test_preprocess():
@@ -49,6 +50,12 @@ def _test_hate_classification():
     assert hate_classification("some hate speech stuff") == 4
     assert hate_classification("") == 4
 
+def _test_hate_labels(tweets, raw_labels):
+    labels = change_hate_labels(tweets, raw_labels)
+
+    assert 4 not in pd.Series(labels).value_counts().index
+    assert 2 in pd.Series(labels).value_counts().index
+    assert 3 in pd.Series(labels).value_counts().index
 
 if __name__ == "__main__":
 
@@ -83,5 +90,8 @@ if __name__ == "__main__":
 
     print("Testing hate classification function...\n")
     _test_hate_classification()
+
+    print("Testing change hate labels function...\n")
+    _test_hate_labels(tweets, raw_labels)
 
     print("All tests were successful.\n")
