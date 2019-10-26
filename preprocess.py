@@ -1,6 +1,5 @@
 import re
 import html
-from string import punctuation
 
 def preprocess(text_string):
 
