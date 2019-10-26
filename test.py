@@ -1,9 +1,13 @@
 import numpy as np
 import pandas as pd
 
+from nltk import sent_tokenize, word_tokenize, pos_tag, ne_chunk
+from nltk.tokenize import SpaceTokenizer
+
 from preprocess import preprocess
 from create_lookup_tables import create_lookup_tables
 from padding import create_pad_fn, pad_tweets
+from hate_classification import hate_classification
 
 
 def _test_preprocess():
@@ -36,6 +40,16 @@ def _test_pad_tweets():
     assert len(pad_tweets('hi', 100).split()) == 100
     assert pad_tweets('this sentence is a bit longer', 1) == 'this sentence is a bit longer'
 
+def _test_hate_classification():
+    assert hate_classification("MENTIONHERE") == 3
+    assert hate_classification("Karen is absolutely crazy") == 3
+    assert hate_classification("Karen is his sister. She's absolutely crazy") == 3
+    assert hate_classification("They should all be sent to Mexico") == 3
+    assert hate_classification("They should all leave the country") == 4
+    assert hate_classification("some hate speech stuff") == 4
+    assert hate_classification("") == 4
+
+
 if __name__ == "__main__":
 
     df = pd.read_csv("./data/labeled_data.csv", index_col=0)
@@ -62,5 +76,12 @@ if __name__ == "__main__":
 
     print("Testing padding function...\n")
     _test_pad_tweets()
+
+    MAX_LENGTH = df.word_count.max()
+    pad_tweets = create_pad_fn(MAX_LENGTH)
+    df["padded_tweets"] = df.clean_tweet.map(pad_tweets)
+
+    print("Testing hate classification function...\n")
+    _test_hate_classification()
 
     print("All tests were successful.\n")
