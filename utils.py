@@ -8,6 +8,10 @@ from nltk import sent_tokenize, word_tokenize, pos_tag, ne_chunk
 from nltk.tokenize import SpaceTokenizer
 
 def preprocess(text_string):
+    '''
+
+    Heavily drawn from Davidson et al. (2017).
+    '''
 
     # Casing should not make a difference in our case
     text_string = text_string.lower()
@@ -60,6 +64,8 @@ def create_lookup_tables(text):
     Create lookup tables for vocabulary
     :param text: Tweets
     :return: A tuple of dicts (vocab_to_int, int_to_vocab)
+
+    Drawn from Udacity. (2019).
     """
 
     # Generate vocabulary
@@ -110,8 +116,14 @@ def pad_tweets(tweet, max_length=10):
     return padded_tweet
 
 def hate_classification(hate_tweet):
-    '''Receives a hateful tweet.
-       Return 3 for directed hate speech and 4 otherwise.'''
+    '''
+    Receives a hateful tweet.
+    Return 3 for directed hate speech and 4 otherwise.
+
+    I do not implement co-reference resolution since a single NE is sufficient for directed hate speech.
+
+    Partly drawn from imanzabet. (2017).
+    '''
 
     if bool(hate_tweet.count("MENTIONHERE")): return(3)
 
