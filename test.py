@@ -1,11 +1,12 @@
 import numpy as np
 import pandas as pd
+import torch
 
 from nltk import sent_tokenize, word_tokenize, pos_tag, ne_chunk
 from nltk.tokenize import SpaceTokenizer
 
 from utils import preprocess, create_lookup_tables, create_pad_fn, pad_tweets,\
-                  hate_classification, change_hate_labels
+                  hate_classification, change_hate_labels, get_loaders
 
 def _test_preprocess():
 
@@ -53,6 +54,19 @@ def _test_hate_labels(tweets, raw_labels):
     assert 2 in pd.Series(labels).value_counts().index
     assert 3 in pd.Series(labels).value_counts().index
 
+def _test_get_loaders(features, labels):
+
+    train_loader, valid_loader, test_loader = get_loaders(features, labels, prnt=False)
+    train_x, train_y = iter(train_loader).next()
+    valid_x, valid_y = iter(valid_loader).next()
+    test_x, test_y = iter(test_loader).next()
+
+    assert isinstance(train_loader, torch.utils.data.dataloader.DataLoader)
+    assert isinstance(valid_loader, torch.utils.data.dataloader.DataLoader)
+    assert isinstance(test_loader, torch.utils.data.dataloader.DataLoader)
+    assert train_x.shape == valid_x.shape == test_x.shape
+    assert train_y.shape == valid_y.shape == test_y.shape
+
 if __name__ == "__main__":
 
     df = pd.read_csv("./data/labeled_data.csv", index_col=0)
@@ -89,5 +103,10 @@ if __name__ == "__main__":
 
     print("Testing change hate labels function...\n")
     _test_hate_labels(tweets, raw_labels)
+
+    tweets_ints = np.array([[vocab_to_int[word] for word in tweet.split()] for tweet in df.padded_tweets.values])
+
+    print("Testing get loaders function...\n")
+    _test_get_loaders(tweets_ints, raw_labels)
 
     print("All tests were successful.\n")
