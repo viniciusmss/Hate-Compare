@@ -9,7 +9,7 @@ train_on_gpu = torch.cuda.is_available()
 class HateSpeechClassifier(nn.Module):
 
     def __init__(self, vocab_size, output_size, embedding_dim, cnn_params, pool_params,
-                 hidden_dim, n_layers, dropout=0.5, embedding_path="glove/glove.twitter.27B.25d.txt", vocab_to_int=None):
+                 hidden_dim, n_layers, dropout=0.5, embedding_path=None, vocab_to_int=None):
         """
         TO BE RESTATED
         Initialize the PyTorch RNN Module
@@ -155,3 +155,51 @@ class HateSpeechClassifier(nn.Module):
                       weight.new(self.n_layers, batch_size, self.hidden_dim).zero_())
 
         return hidden
+
+def forward_back_prop(model, optimizer, criterion, inp, target, hidden, clip=5):
+    """
+    Forward and backward propagation on the neural network
+    :param model: The PyTorch Module that holds the neural network
+    :param optimizer: The PyTorch optimizer for the neural network
+    :param criterion: The PyTorch loss function
+    :param inp: A batch of input to the neural network
+    :param target: The target output for the batch of input
+    :return: The loss and the latest hidden state Tensor
+    """
+
+    batch_size = inp.size(0)
+    target = target.type(torch.LongTensor)
+
+    # move data to GPU, if available
+    if train_on_gpu:
+        inp, target = inp.cuda(), target.cuda()
+
+    # Creating new variables for the hidden state, otherwise
+    # we'd backprop through the entire training history
+    hidden = tuple([each.data for each in hidden])
+
+    # zero accumulated gradients
+    model.zero_grad()
+
+    # get the output from the model
+    output, hidden = model(inp, hidden)
+
+    # perform backpropagation and optimization
+    # calculate the loss and perform backprop
+    loss = criterion(output, target)
+
+    try:
+        loss.backward()
+
+    except RuntimeError:
+        fn = lambda x, y : print('{} : {}'.format(x, y.shape))
+        fn('output', output)
+        fn('target', target)
+        fn('loss', loss.item())
+
+    # `clip_grad_norm` helps prevent the exploding gradient problem in RNNs / LSTMs.
+    nn.utils.clip_grad_norm_(model.parameters(), clip)
+    optimizer.step()
+
+    # return the loss over a batch and the hidden state produced by our model
+    return loss.item(), hidden
