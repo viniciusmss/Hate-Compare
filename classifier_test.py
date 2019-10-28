@@ -1,10 +1,12 @@
 import json
 import torch
 import numpy as np
+import pandas as pd
+from torch import nn
 from unittest.mock import MagicMock, patch
 
 from utils import get_loaders
-from classifier_utils import HateSpeechClassifier, forward_back_prop
+from classifier_utils import HateSpeechClassifier, forward_back_prop, train_classifier
 
 train_on_gpu = torch.cuda.is_available()
 
@@ -94,6 +96,11 @@ def _test_forward_back_prop(classifierNN, forward_back_prop, train_on_gpu):
     assert mock_decoder_optimizer.step.called, 'Optimization step not performed'
     assert type(loss) == float, 'Wrong return type. Expected {}, got {}'.format(float, type(loss))
 
+def _test_train_classifier(*args):
+
+    model = train_classifier(*args, try_load = False, save_path = None)
+
+    assert isinstance(model, HateSpeechClassifier)
 
 if __name__ == "__main__":
 
@@ -114,5 +121,34 @@ if __name__ == "__main__":
 
     print("Testing forward back propagation function...\n")
     _test_forward_back_prop(HateSpeechClassifier, forward_back_prop, train_on_gpu)
+
+    sequence_length = tweets.shape[1]  # number of words in a sequence
+    n_epochs = 1
+    learning_rate = 0.01
+    vocab_size = len(vocab_to_int)
+    output_size = pd.Series(labels).nunique()
+    embedding_dim = 10
+    hidden_dim = 16
+    batch_size = 64
+    n_layers = 1
+    show_every_n_batches = tweets.shape[0] + 1
+    cnn_params = (32, 25, 1, 4)
+    pool_params = (4, 4, 0)
+
+    print("Instantiating model...\n")
+    model = HateSpeechClassifier(vocab_size, output_size, embedding_dim,
+                                 cnn_params, pool_params, hidden_dim, n_layers,
+                                 dropout=0.5, vocab_to_int=vocab_to_int)
+
+    if train_on_gpu:
+        model.cuda()
+
+    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+    criterion = nn.CrossEntropyLoss()
+
+    print("Testing training function...\n")
+    _test_train_classifier(model, batch_size, optimizer, criterion, n_epochs,
+                           train_loader, valid_loader, show_every_n_batches)
+
 
     print("All tests were successful.\n")

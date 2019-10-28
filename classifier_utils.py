@@ -203,3 +203,128 @@ def forward_back_prop(model, optimizer, criterion, inp, target, hidden, clip=5):
 
     # return the loss over a batch and the hidden state produced by our model
     return loss.item(), hidden
+
+def train_classifier(model, batch_size, optimizer, criterion, n_epochs, train_loader, valid_loader,
+                     show_every_n_batches=10, try_load = False, save_path = None):
+
+    # Load model previously trained if availabale
+    if try_load:
+        try:
+            model.load_state_dict(torch.load(save_path))
+            return model
+        except:
+            pass
+
+    # n steps
+    steps = 0
+
+    # initialize tracker for minimum validation loss
+    valid_loss_min = np.Inf
+
+    print("Training for %d epoch(s)..." % n_epochs)
+    for epoch_i in range(1, n_epochs + 1):
+
+        # initialize variables to monitor training loss
+        train_loss = 0.0
+
+        ###################
+        # train the model #
+        ###################
+
+        # initialize hidden state
+        hidden = model.init_hidden(batch_size)
+
+        # Set model for training
+        model.train()
+
+        for batch_i, (inputs, labels) in enumerate(train_loader, 1):
+
+            # make sure you iterate over completely full batches, only
+            n_batches = len(train_loader.dataset)//batch_size
+            if(batch_i > n_batches):
+                break
+
+            # forward, back prop
+            loss, hidden = forward_back_prop(model, optimizer, criterion, inputs, labels, hidden)
+
+            # record loss
+            train_loss += loss
+
+            if batch_i % show_every_n_batches == 0:
+                print("Epoch: {}/{}. \tBatch: {}/{}.\t Avg. Training Loss: {}".format(epoch_i,
+                                                                                      n_epochs,
+                                                                                      batch_i,
+                                                                                      len(train_loader),
+                                                                                      train_loss/batch_i))
+
+        ######################
+        # validate the model #
+        ######################
+
+        valid_loss = 0.0
+        correct = 0.0
+        total = 0.0
+
+        # Initialize hidden state
+        valid_hidden = model.init_hidden(batch_size)
+
+        # Set model for evaluation
+        model.eval()
+
+        for batch_i, (inputs, labels) in enumerate(valid_loader, 1):
+
+            # make sure you iterate over completely full batches, only
+            n_batches = len(valid_loader.dataset)//batch_size
+            if(batch_i > n_batches):
+                break
+
+            labels = labels.type(torch.LongTensor)
+
+            # move data to GPU, if available
+            if train_on_gpu:
+                inputs, labels = inputs.cuda(), labels.cuda()
+
+            # Creating new variables for the hidden state
+            valid_hidden = tuple([each.data for each in valid_hidden])
+
+            # get the output from the model
+            output, valid_hidden = model(inputs, valid_hidden)
+
+            # calculate the loss
+            loss = criterion(output, labels)
+
+            # update running validation loss
+            valid_loss += loss
+
+            # convert output probabilities to predicted class
+            pred = output.data.max(1, keepdim=True)[1]
+
+            # compare predictions to true label
+            correct += np.sum(np.squeeze(pred.eq(labels.data.view_as(pred))).cpu().numpy())
+            total += inputs.size(0)
+
+        # print training/validation statistics
+        # calculate average loss over an epoch
+        train_loss = train_loss/len(train_loader)
+        valid_loss = valid_loss/len(valid_loader)
+        acc = 100. * correct / total
+
+        # print validation statistics
+        print('Epoch: {} \tTraining Loss: {:.6f} \tValidation Loss: {:.6f} \t Accuracy: {:.6f}\n'.format(
+            epoch_i,
+            train_loss,
+            valid_loss,
+            acc
+            ))
+
+        # save model if validation loss has decreased
+        if save_path is not None:
+            if valid_loss <= valid_loss_min:
+                print('Validation loss decreased ({:.6f} --> {:.6f}).  Saving model ...\n'.format(
+                valid_loss_min,
+                valid_loss))
+                torch.save(model.state_dict(), save_path)
+                valid_loss_min = valid_loss
+
+    # returns a trained classifier
+    return model
