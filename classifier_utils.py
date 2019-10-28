@@ -3,6 +3,12 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import matplotlib.pyplot as plt
+
+from sklearn import svm, datasets
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix
+from sklearn.utils.multiclass import unique_labels
 
 train_on_gpu = torch.cuda.is_available()
 
@@ -328,3 +334,132 @@ def train_classifier(model, batch_size, optimizer, criterion, n_epochs, train_lo
 
     # returns a trained classifier
     return model
+
+def batch_test(model, batch_size, test_loader, criterion, prnt=True):
+
+    # Get test data loss and accuracy
+    test_loss = 0 # track loss
+    num_correct = 0
+    total = 0
+    y_pred, y_true = [], []
+
+    # init hidden state
+    test_hidden = model.init_hidden(batch_size)
+
+    model.eval()
+    # iterate over test data
+    for batch_i, (inputs, labels) in enumerate(test_loader, 1):
+
+        # make sure you iterate over completely full batches, only
+        n_batches = len(test_loader.dataset)//batch_size
+        if(batch_i > n_batches):
+            break
+
+        # Creating new variables for the hidden state, otherwise
+        # we'd backprop through the entire training history
+        test_hidden = tuple([each.data for each in test_hidden])
+
+        if(train_on_gpu):
+            inputs, labels = inputs.cuda(), labels.cuda()
+
+        # get predicted outputs
+        output, test_hidden = model(inputs, test_hidden)
+
+        # Accumulate loss
+        test_loss += criterion(output, labels)
+
+        # convert output probabilities to predicted class
+        pred = output.data.max(1, keepdim=True)[1]
+
+        # compare predictions to true label
+        num_correct += np.sum(np.squeeze(pred.eq(labels.data.view_as(pred))).cpu().numpy())
+        total += inputs.size(0)
+
+        # Save prediction and labels
+        y_pred += list(pred.squeeze().cpu().numpy())
+        y_true += list(labels.data.cpu().numpy())
+
+    test_acc = num_correct/len(test_loader.dataset)
+
+    if prnt:
+        # -- stats! -- ##
+        # avg test loss
+        print("Test loss: {:.3f}".format(test_loss/len(test_loader)))
+
+        # accuracy over all test data
+        print("Test accuracy: {:.1f}%".format(100*test_acc))
+
+    return(test_loss, test_acc, y_true, y_pred)
+
+def plot_confusion_matrices(y_true, y_pred, cmap=plt.cm.Blues):
+
+    if max(y_true) == 2:
+        class_names = np.array(["Hate Speech", "Offensive","Neither"])
+    else:
+        class_names = np.array(["Offensive","Neither","Dir. Hate","Gen. Hate"])
+
+    def plot_confusion_matrix(normalize, title, class_names,
+                              cmap=cmap):
+        """
+        This function prints and plots the confusion matrix.
+        Normalization can be applied by setting `normalize=True`.
+        """
+        if not title:
+
+            if normalize:
+                title = 'Normalized confusion matrix'
+            else:
+                title = 'Confusion matrix, without normalization'
+
+        # Compute confusion matrix
+        cm = confusion_matrix(y_true, y_pred)
+        # Only use the labels that appear in the data
+        class_names = class_names[unique_labels(y_true, y_pred)]
+        if normalize:
+            cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+            print("Normalized confusion matrix")
+        else:
+            print('Confusion matrix, without normalization')
+
+        fig, ax = plt.subplots()
+        im = ax.imshow(cm, interpolation='nearest', cmap=cmap)
+        ax.figure.colorbar(im, ax=ax)
+        # We want to show all ticks...
+        ax.set(xticks=np.arange(cm.shape[1]),
+               yticks=np.arange(cm.shape[0]),
+               # ... and label them with the respective list entries
+               xticklabels=class_names, yticklabels=class_names,
+               title=title,
+               ylabel='True label',
+               xlabel='Predicted label')
+
+        bottom, top = ax.get_ylim()
+        ax.set_ylim(bottom + 0.5, top - 0.5)
+
+        # Rotate the tick labels and set their alignment.
+        plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
+                 rotation_mode="anchor")
+
+        # Loop over data dimensions and create text annotations.
+        fmt = '.2f' if normalize else 'd'
+        thresh = cm.max() / 2.
+        for i in range(cm.shape[0]):
+            for j in range(cm.shape[1]):
+                ax.text(j, i, format(cm[i, j], fmt),
+                        ha="center", va="center",
+                        color="white" if cm[i, j] > thresh else "black")
+        fig.tight_layout()
+        return ax
+
+
+    np.set_printoptions(precision=2)
+
+    # Plot non-normalized confusion matrix
+    plot_confusion_matrix(normalize=False, class_names=class_names,
+                          title='Confusion matrix, without normalization')
+
+    # Plot normalized confusion matrix
+    plot_confusion_matrix(normalize=True, class_names=class_names,
+                          title='Normalized confusion matrix')
+
+    plt.show()
