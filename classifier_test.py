@@ -8,8 +8,6 @@ from unittest.mock import MagicMock, patch
 from utils import get_loaders
 from classifier_utils import HateSpeechClassifier, forward_back_prop, train_classifier
 
-train_on_gpu = torch.cuda.is_available()
-
 def _test_HateSpeechClassifier():
     batch_size = 20
     sequence_length = 14
@@ -48,10 +46,11 @@ def _test_HateSpeechClassifier():
     assert test_classifier.embedding.weight.data.shape[0] == len(vocab_to_int)
 
 class _TestNN(torch.nn.Module):
-    def __init__(self, input_size, output_size):
+    def __init__(self, input_size, output_size, train_on_gpu):
         super(_TestNN, self).__init__()
         self.decoder = torch.nn.Linear(input_size, output_size)
         self.forward_called = False
+        self.train_on_gpu = train_on_gpu
 
     def forward(self, nn_input, hidden):
         self.forward_called = True
@@ -72,9 +71,10 @@ def _test_forward_back_prop(classifierNN, forward_back_prop, train_on_gpu):
     learning_rate = 0.01
 
     model = classifierNN(input_size, output_size, embedding_dim,
-                         cnn_params, pool_params, hidden_dim, n_layers)
+                         cnn_params, pool_params, hidden_dim, n_layers,
+                         train_on_gpu=train_on_gpu)
 
-    mock_decoder = MagicMock(wraps=_TestNN(input_size, output_size))
+    mock_decoder = MagicMock(wraps=_TestNN(input_size, output_size, train_on_gpu))
     if train_on_gpu:
         mock_decoder.cuda()
 
@@ -138,9 +138,10 @@ if __name__ == "__main__":
     print("Instantiating model...\n")
     model = HateSpeechClassifier(vocab_size, output_size, embedding_dim,
                                  cnn_params, pool_params, hidden_dim, n_layers,
-                                 dropout=0.5, vocab_to_int=vocab_to_int)
+                                 dropout=0.5, vocab_to_int=vocab_to_int,
+                                 train_on_gpu=train_on_gpu)
 
-    if train_on_gpu:
+    if model.train_on_gpu:
         model.cuda()
 
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)

@@ -10,12 +10,11 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
 from sklearn.utils.multiclass import unique_labels
 
-train_on_gpu = torch.cuda.is_available()
-
 class HateSpeechClassifier(nn.Module):
 
     def __init__(self, vocab_size, output_size, embedding_dim, cnn_params, pool_params,
-                 hidden_dim, n_layers, dropout=0.5, embedding_path=None, vocab_to_int=None):
+                 hidden_dim, n_layers, dropout=0.5, embedding_path=None,
+                 vocab_to_int=None, train_on_gpu=False):
         """
         TO BE RESTATED
         Initialize the PyTorch RNN Module
@@ -36,6 +35,7 @@ class HateSpeechClassifier(nn.Module):
         self.embedding_dim = embedding_dim
         self.hidden_dim = hidden_dim
         self.vocab_to_int = vocab_to_int
+        self.train_on_gpu = train_on_gpu
 
         # define model layers
         self.embedding = nn.Embedding(vocab_size, embedding_dim)
@@ -116,6 +116,8 @@ class HateSpeechClassifier(nn.Module):
 
     def set_pretrained_weights(self, embedding_path, pnt=True):
 
+        print("Setting pretrained embedding weights...")
+
         if not hasattr(self, 'word2vec_model'):
             self.word2vec_model = gensim.models.KeyedVectors.load_word2vec_format(embedding_path)
 
@@ -138,7 +140,7 @@ class HateSpeechClassifier(nn.Module):
 
         if pnt: print("{} words in the vocabulary have no pre-trained embedding.".format(n))
 
-        device = "cuda:0" if train_on_gpu else "cpu"
+        device = "cuda:0" if self.train_on_gpu else "cpu"
         embedding_weights = torch.Tensor(embedding_weights).type(torch.FloatTensor).to(device)
         self.embedding.weight = nn.Parameter(embedding_weights)
 
@@ -153,7 +155,7 @@ class HateSpeechClassifier(nn.Module):
         # initialize hidden state with zero weights, and move to GPU if available
         weight = next(self.parameters()).data
 
-        if (train_on_gpu):
+        if (self.train_on_gpu):
             hidden = (weight.new(self.n_layers, batch_size, self.hidden_dim).zero_().cuda(),
                   weight.new(self.n_layers, batch_size, self.hidden_dim).zero_().cuda())
         else:
@@ -177,7 +179,7 @@ def forward_back_prop(model, optimizer, criterion, inp, target, hidden, clip=5):
     target = target.type(torch.LongTensor)
 
     # move data to GPU, if available
-    if train_on_gpu:
+    if model.train_on_gpu:
         inp, target = inp.cuda(), target.cuda()
 
     # Creating new variables for the hidden state, otherwise
@@ -287,7 +289,7 @@ def train_classifier(model, batch_size, optimizer, criterion, n_epochs, train_lo
             labels = labels.type(torch.LongTensor)
 
             # move data to GPU, if available
-            if train_on_gpu:
+            if model.train_on_gpu:
                 inputs, labels = inputs.cuda(), labels.cuda()
 
             # Creating new variables for the hidden state
@@ -359,7 +361,7 @@ def batch_test(model, batch_size, test_loader, criterion, prnt=True):
         # we'd backprop through the entire training history
         test_hidden = tuple([each.data for each in test_hidden])
 
-        if(train_on_gpu):
+        if(model.train_on_gpu):
             inputs, labels = inputs.cuda(), labels.cuda()
 
         # get predicted outputs
