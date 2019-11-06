@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from embedding import get_corpus
+from .embedding import get_corpus
 from nltk import pos_tag
 import gensim
 import re
