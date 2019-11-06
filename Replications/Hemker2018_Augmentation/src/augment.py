@@ -5,8 +5,6 @@ from nltk import pos_tag
 import gensim
 import re
 from nltk.corpus import wordnet as wn
-from textgenrnn import textgenrnn
-#from augment import csv_to_txt
 import os
 
 class Augment():
