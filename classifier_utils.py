@@ -13,7 +13,7 @@ from sklearn.utils.multiclass import unique_labels
 class HateSpeechClassifier(nn.Module):
 
     def __init__(self, vocab_size, output_size, embedding_dim, cnn_params, pool_params,
-                 hidden_dim, n_layers, dropout=0.5, embedding_path=None,
+                 hidden_dim, n_layers, p_lstm_dropout= 0, p_dropout=0, embedding_path=None,
                  vocab_to_int=None, train_on_gpu=False):
         """
         TO BE RESTATED
@@ -48,9 +48,9 @@ class HateSpeechClassifier(nn.Module):
 
         n_maps, _, _, _ = cnn_params
         self.lstm = nn.LSTM(n_maps, hidden_dim, n_layers,
-                            dropout=dropout, batch_first=True)
+                            dropout=p_lstm_dropout, batch_first=True)
 
-        self.dropout = nn.Dropout(0.2)
+        self.dropout = nn.Dropout(p_dropout)
 
         self.fc = nn.Linear(hidden_dim, output_size)
 
@@ -90,7 +90,7 @@ class HateSpeechClassifier(nn.Module):
         lstm_out = lstm_out.contiguous().view(-1, self.hidden_dim)
 
         # dropout and fully-connected layer
-        # out = self.dropout(lstm_out)
+        lstm_out = self.dropout(lstm_out)
         fc_out = self.fc(lstm_out)
 
         # reshape to be batch_size first
