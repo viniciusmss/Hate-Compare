@@ -19,7 +19,8 @@ class Augment():
                  valid_tags=['NN'],
                  threshold=0.75,
                  x_col='tweet',
-                 y_col='class'):
+                 y_col='class',
+                 path=''):
         """
         Constructor Arguments
         method (string):
@@ -42,7 +43,7 @@ class Augment():
         y_col (string): column name in csv for labels
         """
 
-        self.model = get_corpus(corpus_)
+        self.model = get_corpus(corpus_, path)
         print('Loaded corpus: ', corpus_)
         self.x_col=x_col
         self.y_col=y_col
