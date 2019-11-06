@@ -10,7 +10,10 @@ def get_corpus(corpus_):
         return KeyedVectors.load_word2vec_format('GoogleNews-vectors-negative300.bin',
                                                  binary=True)
     if corpus_=='glove':
-        return KeyedVectors.load_word2vec_format('glove_gensim_vectors.txt',
+        return KeyedVectors.load_word2vec_format('glove.42B.300d.txt',
+                                                 binary=False)
+    if corpus_=='glove25':
+        return KeyedVectors.load_word2vec_format('glove.twitter.27B.25d.txt',
                                                  binary=False)
     if corpus_=='fasttext':
         return KeyedVectors.load_word2vec_format('crawl-300d-2M.vec',
