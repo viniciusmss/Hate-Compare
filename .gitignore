@@ -1,0 +1,13 @@
+glove/*
+Replications/Badjatiya2017/tweet_data/
+Replications/Davidson2017/classifier/temp.py
+Replications/Risch2018
+Replications/Wang2018
+Replications/Grondahl2018
+Replications/Hemker2018_Augmentation
+Replications/data/
+*.pt
+*.pth
+*.json
+*.pyc
+*.ipynb_checkpoints
