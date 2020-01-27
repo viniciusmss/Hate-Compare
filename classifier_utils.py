@@ -10,13 +10,16 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix
 from sklearn.utils.multiclass import unique_labels
 
+# Note: Helper function here are heavily inspired by the code base of 
+# Udacity's Deep Learning Nanodegree. Check it out!
+# Udacity. (2019). TV Script Generation. In Deep Learning (PyTorch). Retrieved from https://github.com/udacity/deep-learning-v2-pytorch
+
 class HateSpeechClassifier(nn.Module):
 
     def __init__(self, vocab_size, output_size, embedding_dim, cnn_params, pool_params,
                  hidden_dim, n_layers, p_lstm_dropout= 0, p_dropout=0, embedding_path=None,
                  vocab_to_int=None, train_on_gpu=False):
         """
-        TO BE RESTATED
         Initialize the PyTorch RNN Module
         :param vocab_size: The number of input dimensions of the neural network (the size of the vocabulary)
         :param output_size: The number of output dimensions of the neural network
@@ -25,7 +28,13 @@ class HateSpeechClassifier(nn.Module):
             of feature maps, kernel size, stride and padding of a Conv1D layer.
         :param pool_params: A 3-element tuple containing the kernel size, stride and padding of a MaxPool1D layer.
         :param hidden_dim: The size of the hidden layer outputs
-        :param dropout: dropout to add in between LSTM/GRU layers
+        :param n_layers: The number of stacked LSTM layers
+        :param p_lstm_dropout: The dropout between stacked LSTM layers [default: 0] 
+        :param p_dropout: Probability of dropout before the classification layer [default: 0]
+        :param embedding_path: Path to pretrained embedding model (e.g., GloVe) [default: None]
+        :param vocab_to_int: If using pretrained model, a word-to-integer dictionary is necessary
+            to construct the embedding [default: 0]
+        :param train_on_gpu: Whether to train the network on GPU [default: False]
         """
         super(HateSpeechClassifier, self).__init__()
 
@@ -60,9 +69,10 @@ class HateSpeechClassifier(nn.Module):
         Forward propagation of the neural network
         :param nn_input: The input to the neural network
         :param hidden: The hidden state
+        :param test_print: When debugging, set to true to show expected and actual shapes of tensors.
         :return: Two Tensors, the output of the neural network and the latest hidden state
         """
-        # TODO: Implement function
+        
         batch_size = nn_input.size(0)
 
         # embeddings

@@ -8,6 +8,10 @@ from unittest.mock import MagicMock, patch
 from utils import get_loaders
 from classifier_utils import HateSpeechClassifier, forward_back_prop, train_classifier
 
+# Note: Helper function here are heavily inspired by the code base of 
+# Udacity's Deep Learning Nanodegree. Check it out!
+# Udacity. (2019). TV Script Generation. In Deep Learning (PyTorch). Retrieved from https://github.com/udacity/deep-learning-v2-pytorch
+
 def _test_HateSpeechClassifier():
     batch_size = 20
     sequence_length = 14
