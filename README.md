@@ -8,7 +8,10 @@ This repository is a work in progress for my undergraduate thesis.
 2. Training and Testing Classifier
 3. Data Augmentation
 4. ULMFit
-99. Early Implementation with Class Breakdown
+5. Augmented ULMFit
+6. CV Augmented ULMFit
+
+99\. Early Implementation with Class Breakdown
 
 ### Short Summaries
 
@@ -22,6 +25,19 @@ Aims to replicate Hemker (2018) and makes heavy use of helper function in `class
 
 **4. ULMFit.** A step-by-step implementation of the ULMFiT (Howard & Ruder, 2018) NLP transfer learning model. I implement discriminative fine-tuning, gradual unfreezing, and bidirectional models according to the original paper and fastai's (2019) repository, from where much of the code here is based.
 
+**5. Augmented ULMFit.** Similar to \#4 but now we augment the hate speech class in the training set. 
+
+**6. CV Augmented ULMFit.** Similar to \#5 but now we perform 5-fold cross validation.
+
+**99. Early Implementation with Class Breakdown.** This is an early, draft implementation of \#1 and \#2 together while implementing the helper functions within the notebook. It's kept here for educational purposes (possibly). It is also contains the unit tests for the helper functions.
+
+### Software Requirements
+
+The `envs` folder contains `.yml` files that specify package versions and allow you to quickly build conda environment to reproduce the results on this repo. Note that:
+
+- `environment1.yml` applies to notebooks 1-3 and the Davidson et al. (2017) replication. The environment was built and run on a 64-bit Windows 10 Home PC.
+- `environment2.yml` applies to notebooks 4-6. The environment was built on a [Paperspace](https://www.paperspace.com/) Free-P5000 machine initialize on fast.ai's container.
+- `environmentpy27.yml` applies to the replication of Badjatiya et al. (2017). It was built on a 64-bit Ubuntu Linux virtual machine running on a 64-bit Windows 10 home PC.
 
 ### References
 
