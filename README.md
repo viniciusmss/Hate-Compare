@@ -7,6 +7,13 @@ This repository is a work in progress for my undergraduate thesis.
 1. Data Preprocessing
 99. Early Implementation with Class Breakdown
 
+### Short Summaries
+
+**1. Data Preprocessing**
+Focuses on showing text data preprocessing step by step. It makes use of helper function available in this repo. The data preprocessing in later notebooks is largely hidden under the hood due to fast.ai's API.
+
+
+
 ### References
 
 I have drawn extensively from other authors to execute this implementation. I have tried to recognize their contribution by citing all works in the _References_ section at the end of this README and referencing the citation in the individual scripts where the contribution is featured.
