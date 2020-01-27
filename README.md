@@ -7,6 +7,7 @@ This repository is a work in progress for my undergraduate thesis.
 1. Data Preprocessing
 2. Training and Testing Classifier
 3. Data Augmentation
+4. ULMFit
 99. Early Implementation with Class Breakdown
 
 ### Short Summaries
@@ -19,7 +20,7 @@ Aims to replicate Hemker (2018) and makes heavy use of helper function in `class
 
 **3. Data Augmentation.** Augments the dataset according to Hemker's (2018) threshold augmentation procedure. Note that we use a slightly preprocessed version of the original dataset (available in the data folder) to facilitate augmentation.
 
-
+**4. ULMFit.** A step-by-step implementation of the ULMFiT (Howard & Ruder, 2018) NLP transfer learning model. I implement discriminative fine-tuning, gradual unfreezing, and bidirectional models according to the original paper and fastai's (2019) repository, from where much of the code here is based.
 
 
 ### References
@@ -28,7 +29,11 @@ I have drawn extensively from other authors to execute this implementation. I ha
 
 Davidson, T., Warmsley, D., Macy, M., & Weber, I. (2017, May). Automated hate speech detection and the problem of offensive language. In _Eleventh International AAAI Conference on Web and Social Media._
 
+fastai (2019). A Code-First Introduction to NLP course [GitHub repository]. Retrieved from https://github.com/fastai/course-nlp
+
 Hemker, K. (2018). Data Augmentation and Deep Learning for Hate Speech Detection (Master's thesis). Retrieved from https://bit.ly/2SnjylP
+
+Howard, J., & Ruder, S. (2018). Universal language model fine-tuning for text classification. _arXiv preprint arXiv:1801.06146_.
 
 imanzabet. (2017, Aug 16). NLTK Named Entity recognition to a Python list [Forum response]. Retrieved from https://stackoverflow.com/a/31838373
 
