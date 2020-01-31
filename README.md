@@ -19,7 +19,7 @@ This repository is a work in progress for my undergraduate thesis.
 Focuses on showing text data preprocessing step by step. It makes use of helper functions in `utils.py` available in this repo. The data preprocessing in later notebooks is largely hidden under the hood due to fast.ai's API.
 
 **2. Training and Testing Classifier.**
-Aims to replicate Hemker (2018) and makes heavy use of helper function in `classifier_utils.py`. The notebooks demonstrates how Hemker's (2018) stated parameters do not yield a funtional classifier.
+Aims to replicate Hemker (2018) and makes heavy use of helper functions in `classifier_utils.py`. The notebooks demonstrates how the parameters reported by Hemker (2018) do not yield a funtional classifier.
 
 **3. Data Augmentation.** Augments the dataset according to Hemker's (2018) threshold augmentation procedure. Note that we use a slightly preprocessed version of the original dataset (available in the data folder) to facilitate augmentation.
 
@@ -36,7 +36,7 @@ Aims to replicate Hemker (2018) and makes heavy use of helper function in `class
 The `envs` folder contains `.yml` files that specify package versions and allow you to quickly build conda environment to reproduce the results on this repo. Note that:
 
 - `environment1.yml` applies to notebooks 1-3 and the Davidson et al. (2017) replication. The environment was built and run on a 64-bit Windows 10 Home PC.
-- `environment2.yml` applies to notebooks 4-6. The environment was built on a [Paperspace](https://www.paperspace.com/) Free-P5000 machine initialize on fast.ai's container.
+- `environment2.yml` applies to notebooks 4-6. The environment was built on a [Paperspace](https://www.paperspace.com/) Free-P5000 machine initialized on fast.ai's container.
 - `environmentpy27.yml` applies to the replication of Badjatiya et al. (2017). It was built on a 64-bit Ubuntu Linux virtual machine running on a 64-bit Windows 10 home PC.
 
 ### References
