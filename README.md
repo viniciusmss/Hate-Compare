@@ -1,6 +1,6 @@
-# A Multidimensional Comparative Analysis of Hate Speech Classifiers
+# A Critical Evaluation of Hate Speech Classifiers
 
-This repository is a work in progress for my undergraduate thesis.
+This contains replication and auxiliary resources to my Senior thesis, which is available [here](https://github.com/viniciusmss/Hate-Compare/blob/master/Capstone.pdf). My goal was to replicate three prominent papers in the field of hate speech classification and provide an application of transfer learning via ULMFiT to this task.
 
 ### Table of Contents
 
